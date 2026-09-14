@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>68-guruh — Yengil avtomobil haydovchisi yo&#x27;l berishi kerakmi?</title><style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#16181d;--muted:#5f6673;--line:#e3e6eb;--accent:#2f7df6;--ok:#1f9d55;--okbg:#e5f6ec;--bad:#d64545;--badbg:#fbe9e9;--mark:#fff1a8;--markink:#16181d}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#101216;--panel:#181b21;--ink:#e8eaee;--muted:#9aa2ae;--line:#2a2f37;--accent:#5b9bff;--ok:#43c47a;--okbg:#15301f;--bad:#f06b6b;--badbg:#3a1a1a;--mark:#5a4b10;--markink:#fff3bf}}
+:root[data-theme=dark]{--bg:#101216;--panel:#181b21;--ink:#e8eaee;--muted:#9aa2ae;--line:#2a2f37;--accent:#5b9bff;--ok:#43c47a;--okbg:#15301f;--bad:#f06b6b;--badbg:#3a1a1a;--mark:#5a4b10;--markink:#fff3bf}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding-block:10px}
+.bar h1{font-size:17px;margin:0;margin-right:auto}
+.bar input{flex:1 1 220px;min-width:0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:inherit}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button,.btn{font:inherit;padding:7px 12px;border:0;background:var(--panel);color:var(--ink);cursor:pointer}
+.btn{border:1px solid var(--line);border-radius:8px}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+.stats{color:var(--muted);margin:16px 0 8px}
+.stats a{color:var(--accent)}
+.toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.toc ol{margin:8px 0 0;padding-left:22px;columns:2 360px;column-gap:28px}
+.toc li{break-inside:avoid;margin:2px 0}
+.toc a{color:var(--ink);text-decoration:none}.toc a:hover{color:var(--accent)}
+.toc small{color:var(--muted)}
+.part{font-size:20px;margin:32px 0 0;padding-top:8px;border-top:2px solid var(--line)}
+.group{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0;scroll-margin-top:70px}
+.ghead h2{font-size:18px;margin:4px 0 2px}
+.gid{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;text-transform:uppercase;letter-spacing:.04em}
+.gsub{margin:0;color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px;margin-top:14px}
+.card{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px}
+.num{font-weight:700;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.dupe{color:var(--muted)}
+.qimg{width:100%;max-height:230px;object-fit:contain;border-radius:8px;background:var(--bg);cursor:zoom-in}
+.qimg.zoom{position:fixed;inset:0;width:100vw;height:100vh;max-height:none;z-index:50;background:rgba(0,0,0,.88);border-radius:0;cursor:zoom-out;padding:16px}
+.q{font-size:15px;margin:0;line-height:1.4}
+mark{background:var(--mark);color:var(--markink);border-radius:3px;padding:0 2px}
+.answers{display:flex;flex-direction:column;gap:6px}
+.ans{display:flex;gap:8px;align-items:flex-start;text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer}
+.ans b{font-size:12px;color:var(--muted);min-width:22px;padding-top:1px}
+.ans:hover{border-color:var(--accent)}
+.card.done .ans{cursor:default}
+.card.done .ans[data-c="1"],body.memo .ans[data-c="1"]{background:var(--okbg);border-color:var(--ok)}
+.card.done .ans[data-c="1"] b,body.memo .ans[data-c="1"] b{color:var(--ok)}
+.card.done .ans.picked[data-c="0"]{background:var(--badbg);border-color:var(--bad)}
+.card.done .ans.picked[data-c="0"] b{color:var(--bad)}
+.key{margin-top:14px}.key summary{cursor:pointer;color:var(--accent);font-weight:600}
+body:not(.memo) .key{display:none}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin-top:8px;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.tn{white-space:nowrap;font-weight:700}.tc{color:var(--ok);font-weight:600}
+.score{color:var(--muted);font-size:13px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
+.pager a{color:var(--accent)}
+.hidden{display:none!important}
+.home{color:var(--accent);text-decoration:none;font-weight:600;white-space:nowrap}
+.totop{position:fixed;right:14px;bottom:14px;z-index:6;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;text-decoration:none;font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+@media (max-width:700px){
+.bar{position:static}
+.bar .wrap{gap:8px}
+.bar h1{font-size:15px;flex:1 1 0;min-width:0;margin-right:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar input{flex:1 1 100%;font-size:16px}
+.seg{flex:1 1 auto}.seg button{flex:1}
+.btn,.seg button{padding:9px 12px}
+.score{flex:1 1 100%}
+.stats{font-size:14px}
+.group{padding:12px;margin:12px 0;border-radius:10px}
+.ghead h2{font-size:16px}
+.grid{gap:10px;margin-top:10px}
+.card{padding:10px}
+.ans{padding:10px;min-height:44px}
+.qimg{max-height:260px}
+.toc{padding:10px}
+.toc ol{columns:1;padding-left:20px}
+.part{font-size:18px;margin-top:24px}
+table{font-size:13px}
+th,td{padding:5px 6px}
+}
+</style></head>
+<body><div class="bar"><div class="wrap"><a class="home" href="../index.html">⌂ Bosh sahifa</a><h1>68-guruh — Yengil avtomobil haydovchisi yo&#x27;l berishi kerakmi?</h1>
+<div class="seg" role="group" aria-label="Rejim"><button data-mode="solve" aria-pressed="true">Yechish</button><button data-mode="memo" aria-pressed="false">Yodlash</button></div>
+<button class="btn" id="reset">Qayta boshlash</button><button class="btn" id="theme" aria-label="Yorug'/qorong'i rejim">◐</button>
+<span class="score" id="score"></span></div></div>
+<div class="wrap"><p class="stats"><a href="../barcha-guruhlar.html#g68">← Barcha guruhlar</a></p><section class="group" id="g68" data-search="yengil avtomobil haydovchisi yol berishi kerakmi ha yoq chorrahada qaysi avtomobil yol berishi kerak kok avtomobil qizil avtomobil qaysi avtomobil haydovchisi yol berishi kerak yashil avtomobil haydovchisi kok avtomobil haydovchisi qaysi avtomobil haydovchisi yol berishi kerak kok avtomobil qizil avtomobil qaysi avtomobil haydovchisi yol berishi kerak sariq kelishib otish lozim kok"><header class="ghead"><a class="gid" href="#g68">68-guruh</a><h2>Yengil avtomobil haydovchisi yo&#x27;l berishi kerakmi?</h2><p class="gsub">5 xil variant · savollar: #289, #852, #1078, #1154, #1211</p></header><div class="grid"><article class="card" data-n="289"><div class="meta"><span class="num">#289-savol</span></div><img class="qimg" loading="lazy" src="../rasmlar/15.9.webp" alt="#289-savol rasmi"><h3 class="q">Yengil avtomobil haydovchisi yo&#x27;l berishi kerakmi?</h3><div class="answers"><button class="ans" data-c="1" data-k="0"><b>F1</b><span>Ha</span></button><button class="ans" data-c="0" data-k="1"><b>F2</b><span>Yo&#x27;q</span></button></div></article><article class="card" data-n="852"><div class="meta"><span class="num">#852-savol</span></div><img class="qimg" loading="lazy" src="../rasmlar/d4ecf548-175c-456b-b50d-213562b7a31a_14ef89bb.webp" alt="#852-savol rasmi"><h3 class="q"><mark>Chorrahada qaysi</mark> avtomobil yo&#x27;l berishi <mark>kerak?</mark></h3><div class="answers"><button class="ans" data-c="0" data-k="0"><b>F1</b><span>Ko&#x27;k avtomobil</span></button><button class="ans" data-c="1" data-k="1"><b>F2</b><span>Qizil avtomobil</span></button></div></article><article class="card" data-n="1078"><div class="meta"><span class="num">#1078-savol</span></div><img class="qimg" loading="lazy" src="../rasmlar/Gemini_Generated_Image_jeybohjeybohjeyb_6721a9c1.webp" alt="#1078-savol rasmi"><h3 class="q"><mark>Qaysi</mark> avtomobil haydovchisi yo&#x27;l berishi <mark>kerak?</mark></h3><div class="answers"><button class="ans" data-c="0" data-k="0"><b>F1</b><span>Yashil avtomobil haydovchisi</span></button><button class="ans" data-c="1" data-k="1"><b>F2</b><span>Ko&#x27;k avtomobil haydovchisi</span></button></div></article><article class="card" data-n="1154"><div class="meta"><span class="num">#1154-savol</span></div><img class="qimg" loading="lazy" src="../rasmlar/1166_62676fd5.webp" alt="#1154-savol rasmi"><h3 class="q"><mark>Qaysi</mark> avtomobil haydovchisi yo‘l berishi <mark>kerak?</mark></h3><div class="answers"><button class="ans" data-c="0" data-k="0"><b>F1</b><span>Ko‘k avtomobil</span></button><button class="ans" data-c="1" data-k="1"><b>F2</b><span>Qizil avtomobil</span></button></div></article><article class="card" data-n="1211"><div class="meta"><span class="num">#1211-savol</span></div><img class="qimg" loading="lazy" src="../rasmlar/Generated_Image_July_09_2026_-_10_53PM_4035dd14.webp" alt="#1211-savol rasmi"><h3 class="q"><mark>Qaysi</mark> avtomobil haydovchisi yo&#x27;l berishi <mark>kerak?</mark></h3><div class="answers"><button class="ans" data-c="0" data-k="0"><b>F1</b><span>Sariq</span></button><button class="ans" data-c="0" data-k="1"><b>F2</b><span>Kelishib o&#x27;tish lozim</span></button><button class="ans" data-c="1" data-k="2"><b>F3</b><span>Ko&#x27;k</span></button></div></article></div><details class="key"><summary>Javoblar jadvali (yodlash uchun)</summary><div class="tablewrap"><table><thead><tr><th>Savol</th><th>Savol matni (farqli so'zlar belgilangan)</th><th>To'g'ri javob</th></tr></thead><tbody><tr><td class="tn">#289</td><td>Yengil avtomobil haydovchisi yo&#x27;l berishi kerakmi?</td><td class="tc">Ha</td></tr><tr><td class="tn">#852</td><td><mark>Chorrahada qaysi</mark> avtomobil yo&#x27;l berishi <mark>kerak?</mark></td><td class="tc">Qizil avtomobil</td></tr><tr><td class="tn">#1078</td><td><mark>Qaysi</mark> avtomobil haydovchisi yo&#x27;l berishi <mark>kerak?</mark></td><td class="tc">Ko&#x27;k avtomobil haydovchisi</td></tr><tr><td class="tn">#1154</td><td><mark>Qaysi</mark> avtomobil haydovchisi yo‘l berishi <mark>kerak?</mark></td><td class="tc">Qizil avtomobil</td></tr><tr><td class="tn">#1211</td><td><mark>Qaysi</mark> avtomobil haydovchisi yo&#x27;l berishi <mark>kerak?</mark></td><td class="tc">Ko&#x27;k</td></tr></tbody></table></div></details></section><nav class="pager"><a href="guruh-067.html">← 67-guruh</a><a href="guruh-069.html">69-guruh →</a></nav></div><a class="totop" href="#top" aria-label="Tepaga">↑</a><script>
+const KEY='osonprava-javob-';
+function setMode(m){document.body.classList.toggle('memo',m==='memo');document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));try{localStorage.setItem('osonprava-mode',m)}catch(e){}}
+function score(){const c=document.querySelectorAll('.card.done');let ok=0;c.forEach(x=>{if(x.querySelector('.ans.picked[data-c="1"]'))ok++});const el=document.getElementById('score');if(el)el.textContent=c.length?`Yechildi: ${c.length} · to'g'ri: ${ok} · xato: ${c.length-ok}`:''}
+function pick(card,k,save){if(card.classList.contains('done'))return;const b=card.querySelector(`.ans[data-k="${k}"]`);if(!b)return;b.classList.add('picked');card.classList.add('done');if(save){try{localStorage.setItem(KEY+card.dataset.n,k)}catch(e){}}score()}
+document.addEventListener('click',e=>{const a=e.target.closest('.ans');if(a&&!document.body.classList.contains('memo')){pick(a.closest('.card'),a.dataset.k,true);return}
+const img=e.target.closest('.qimg');if(img){img.classList.toggle('zoom');return}
+const m=e.target.closest('[data-mode]');if(m){setMode(m.dataset.mode);return}
+if(e.target.closest('#reset')){document.querySelectorAll('.card').forEach(c=>{c.classList.remove('done');c.querySelectorAll('.picked').forEach(p=>p.classList.remove('picked'));try{localStorage.removeItem(KEY+c.dataset.n)}catch(e){}});score();return}
+if(e.target.closest('#theme')){const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';try{localStorage.setItem('osonprava-theme',r.dataset.theme)}catch(e){}}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.qimg.zoom').forEach(i=>i.classList.remove('zoom'))});
+const s=document.getElementById('search');if(s)s.addEventListener('input',()=>{const t=s.value.toLowerCase().replace(/[‘’ʻʼ`´']/g,'').trim();document.querySelectorAll('.group').forEach(g=>g.classList.toggle('hidden',!!t&&!g.dataset.search.includes(t)));document.querySelectorAll('.toc li').forEach(li=>li.classList.toggle('hidden',!!t&&document.getElementById(li.dataset.g).classList.contains('hidden')))});
+try{const th=localStorage.getItem('osonprava-theme');if(th)document.documentElement.dataset.theme=th;setMode(localStorage.getItem('osonprava-mode')||'solve');document.querySelectorAll('.card').forEach(c=>{const k=localStorage.getItem(KEY+c.dataset.n);if(k!==null)pick(c,k,false)})}catch(e){setMode('solve')}
+score();
+</script></body></html>
