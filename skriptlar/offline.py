@@ -170,7 +170,11 @@ OFFLINE_JS = """// Header tugmasi: offline yuklash va yangilash.
   };
 
   async function imageState() {
-    const list = await fetch('/rasmlar.json', { cache: 'no-store' }).then(r => r.json()).catch(() => []);
+    const [imgs, auds] = await Promise.all([
+      fetch('/rasmlar.json', { cache: 'no-store' }).then(r => r.json()).catch(() => []),
+      fetch('/ovozlar.json', { cache: 'no-store' }).then(r => r.json()).catch(() => []),
+    ]);
+    const list = imgs.concat(auds);
     const cache = await caches.open('op-img');
     const keys = await cache.keys();
     const have = new Set(keys.map(k => new URL(k.url).pathname));

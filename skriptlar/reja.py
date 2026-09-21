@@ -40,6 +40,17 @@ def key(x):
     return norm(x["q"]), tuple(sorted(norm(a) for a in x["answers"]))
 
 
+# Ovozli sharh matnlari (bo'lsa) — har kartaga tugma qo'yiladi.
+import glob as _glob
+OVOZ = {}
+for _f in sorted(_glob.glob(os.path.join(DATA, "ovoz-matn", "batch-*.json"))):
+    try:
+        for _it in json.load(open(_f, encoding="utf-8")):
+            if _it.get("n") and _it.get("text"):
+                OVOZ[int(_it["n"])] = _it["text"].strip()
+    except Exception:
+        pass
+
 base = load("osonprava-savollar.json")
 bn = {b["n"]: b for b in base}
 groups = load("guruhlar.json")
@@ -92,6 +103,120 @@ BUCKETS = [
 ]
 
 pool = [bn[n] for n in sorted(err_ns | EXTRA_NS)]
+
+# ---- Oilalar: o'xshash savollar to'plami (guruh yoki matn o'xshashligi bo'yicha) ----
+from difflib import SequenceMatcher
+
+STOP = set("""qaysi qanday qanaqa hollarda holatlarda hollar holda bu ushbu mazkur bilan va yoki uchun
+etiladi etiladimi beriladi beriladimi berilgan etilgan mumkin mumkinmi kerak bolsa bolganda bolgan
+sanab otilgan nima nimani kim kimga faqat ham emas har barcha hamma quyidagi necha qancha qachon
+qayerda siz sizga sizning bunday shunday shu eng katta qilishga harakatlanishga transport vositasi
+vositasining vositalari yolning yol qismida qismlarida deb aytiladi""".split())
+
+def content_tokens(n):
+    return [w for w in norm(bn[n]["q"]).split() if w not in STOP and len(w) >= 2]
+
+
+def _stem(w):
+    return w[:5]
+
+
+def _stems(n):
+    return {_stem(w) for w in content_tokens(n)}
+
+
+def _unit(n):
+    """Javob raqam + o'lchov birligi bo'lsa — birlikni qaytaradi (metr, km/s, % ...)."""
+    m = re.match(r"^\s*\d+([.,]\d+)?\s*(km/s|km|mm|m|%|metr|daqiqa|tonna)\b",
+                 bn[n]["answers"][bn[n]["correct"]], re.I)
+    return m.group(2).lower() if m else None
+
+
+parent = {b["n"]: b["n"] for b in pool}
+
+
+def _find(a):
+    while parent[a] != a:
+        parent[a] = parent[parent[a]]
+        a = parent[a]
+    return a
+
+
+def _union(a, b):
+    parent[_find(a)] = _find(b)
+
+
+_qn = {b["n"]: norm(b["q"]) for b in pool}
+for i, a in enumerate(pool):
+    for b in pool[i + 1:]:
+        same_group = group_of.get(a["n"]) and group_of.get(a["n"]) is group_of.get(b["n"])
+        if same_group:
+            _union(a["n"], b["n"])
+            continue
+        ratio = SequenceMatcher(None, _qn[a["n"]], _qn[b["n"]]).ratio()
+        shared = len(_stems(a["n"]) & _stems(b["n"]))
+        if ratio >= 0.72 and shared >= 2:
+            _union(a["n"], b["n"])
+        elif _unit(a["n"]) and _unit(a["n"]) == _unit(b["n"]) and shared >= 4 and ratio >= 0.45:
+            # bir xil o'lchov birligidagi javoblar: "orqa nuqta / balandlik / kenglik" oilasi
+            _union(a["n"], b["n"])
+
+families = {}
+for b in pool:
+    families.setdefault(_find(b["n"]), []).append(b["n"])
+families = {k: v for k, v in families.items() if len(v) > 1}
+fam_of = {n: v for v in families.values() for n in v}
+
+
+DISCRIM = {}
+for members in families.values():
+    toks = {n: content_tokens(n) for n in members}
+    for n in members:
+        mine = {_stem(w) for w in toks[n]}
+        others = [{_stem(w) for w in toks[m]} for m in members if m != n]
+        uniq, seen = [], set()
+        for w in toks[n]:
+            st = _stem(w)
+            if st in seen or any(st in o for o in others):
+                continue
+            uniq.append(w)
+            seen.add(st)
+        uniq.sort(key=len, reverse=True)
+        uniq = uniq[:2]
+        # O'ziga xos so'z bo'lmasa — farq boshqalarda BOR bo'lgan so'zning yo'qligida.
+        if not uniq and others:
+            missing = []
+            for m in members:
+                if m == n:
+                    continue
+                for w in toks[m]:
+                    st = _stem(w)
+                    if st not in mine and w not in missing and sum(1 for o in others if st in o) >= max(1, (len(others) + 1) // 2):
+                        missing.append(w)
+            missing.sort(key=len, reverse=True)
+            uniq = [f"{w} so'zi yo'q" for w in missing[:1]]
+        # Uchinchi yo'l: hech kimda yo'q so'z bo'lmasa ham, KAMIDA BITTA qardoshda
+        # uchramaydigan so'zlar birikmasi farqni ko'rsatadi ("3d" + "baland").
+        if not uniq and others:
+            partial = []
+            for w in toks[n]:
+                st = _stem(w)
+                if st in {_stem(x) for x in partial}:
+                    continue
+                hits = sum(1 for o in others if st in o)
+                if hits < len(others):
+                    partial.append((hits, 0 if len(w) >= 4 else 1, len(w), w))
+            partial.sort()
+            uniq = [t[-1] for t in partial[:2]]
+        # Umuman matn farqi bo'lmasa — demak farq rasmda.
+        if not uniq:
+            uniq = ["farq faqat rasmda"] if bn[n].get("img") else ["asosiy variant"]
+        DISCRIM[n] = uniq
+
+
+def short_answer(n):
+    a = bn[n]["answers"][bn[n]["correct"]]
+    return a if len(a) <= 46 else a[:44].rstrip() + "…"
 assigned, blocks = set(), []
 for day, title, sub, slug, match in BUCKETS:
     items = [b for b in pool if b["n"] not in assigned and match(b)]
@@ -154,6 +279,17 @@ a.badge.grp{color:var(--bad);border-color:var(--bad);font-weight:600}
 .sheet .a{color:var(--ok);font-weight:600}
 .sheet tr.mine .n{color:var(--bad);font-weight:700}
 .filterbar{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+.ovoz{border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+.ovoz .play{font-size:13px;padding:6px 11px}
+.ovoz .play.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+.ovoz-text{margin:8px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
+body:not(.memo) .card:not(.done) .ovoz{display:none}
+.farq{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.farq summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
+.farq ul{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.6}
+.farq li.self{color:var(--ink);font-weight:600}
+.farq .ok{color:var(--ok);font-weight:600}
+body:not(.memo) .card:not(.done) .farq{display:none}
 """
 
 EXTRA_JS = """
@@ -186,6 +322,20 @@ EXTRA_JS = """
       cb.closest('section').style.opacity=cb.checked?'0.55':'';});
     if(cb.checked)cb.closest('section').style.opacity='0.55';
   });
+  // Ovozli sharh: bitta audio, bosilganda o'ynaydi; fayl bo'lmasa brauzer ovozi o'qiydi.
+  const audio=new Audio();let current=null;
+  function stopAll(){audio.pause();try{speechSynthesis.cancel()}catch(e){}
+    document.querySelectorAll('.play.on').forEach(b=>{b.classList.remove('on');b.textContent='▶ Ovozli sharh'});current=null;}
+  audio.addEventListener('ended',stopAll);
+  document.addEventListener('click',e=>{const b=e.target.closest('.play');if(!b)return;
+    const was=current===b;stopAll();if(was)return;
+    current=b;b.classList.add('on');b.textContent="⏸ To'xtatish";
+    if(b.dataset.src){audio.src=b.dataset.src;audio.play().catch(()=>{speak(b)})}
+    else{speak(b)}
+  });
+  function speak(b){try{const u=new SpeechSynthesisUtterance(b.parentElement.querySelector('.ovoz-text').textContent);
+      const v=speechSynthesis.getVoices();u.voice=v.find(x=>/uz/i.test(x.lang))||v.find(x=>/tr/i.test(x.lang))||v.find(x=>/ru/i.test(x.lang))||null;
+      u.rate=1.05;u.onend=stopAll;speechSynthesis.speak(u)}catch(err){b.textContent='yana bir bosing';setTimeout(stopAll,1500)}}
   const only=document.getElementById('onlywrong');
   if(only)only.addEventListener('change',()=>{
     document.querySelectorAll('.card[data-n]').forEach(c=>{
@@ -217,10 +367,33 @@ def card(b):
         for k, a in enumerate(b["answers"])
     )
     mine = " mine" if n in stubborn else ""
+    disc = DISCRIM.get(n, [])
+    q_html = html.escape(b["q"])
+    if disc:
+        for w in sorted(set(disc), key=len, reverse=True):
+            q_html = re.sub(r"(?<![\w>])(" + re.escape(w) + r"\w*)(?![^<]*>)", r"<mark>\1</mark>", q_html, flags=re.I)
+    farq = ""
+    fam = fam_of.get(n)
+    if fam and len(fam) > 1:
+        rows = "".join(
+            f'<li{" class=\"self\"" if m == n else ""}><b>#{m}</b> '
+            f'{html.escape(" ".join(DISCRIM.get(m, [])) or "asosiy variant")} → '
+            f'<span class="ok">{html.escape(short_answer(m))}</span></li>'
+            for m in sorted(fam)
+        )
+        farq = f'<details class="farq"><summary>Farq kaliti — bu oilada {len(fam)} ta savol</summary><ul>{rows}</ul></details>'
+    ovoz = ""
+    if n in OVOZ:
+        has_file = os.path.isfile(os.path.join(ROOT, "ovoz", f"r-{n}.m4a"))
+        ovoz = (
+            f'<div class="ovoz"><button class="btn play" type="button" data-n="{n}"'
+            f'{f" data-src=\"ovoz/r-{n}.m4a\"" if has_file else ""}>▶ Ovozli sharh</button>'
+            f'<p class="ovoz-text">{html.escape(OVOZ[n])}</p></div>'
+        )
     return (
         f'<article class="card{mine}" data-n="r-{n}" data-search="{html.escape(text[n])}">'
-        f'<div class="meta">{"".join(badges)}</div>{img}<h3 class="q">{html.escape(b["q"])}</h3>'
-        f'<div class="answers">{answers}</div></article>'
+        f'<div class="meta">{"".join(badges)}</div>{img}<h3 class="q">{q_html}</h3>'
+        f'<div class="answers">{answers}</div>{farq}{ovoz}</article>'
     )
 
 

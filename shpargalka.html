@@ -96,6 +96,17 @@ a.badge.grp{color:var(--bad);border-color:var(--bad);font-weight:600}
 .sheet .a{color:var(--ok);font-weight:600}
 .sheet tr.mine .n{color:var(--bad);font-weight:700}
 .filterbar{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+.ovoz{border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+.ovoz .play{font-size:13px;padding:6px 11px}
+.ovoz .play.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+.ovoz-text{margin:8px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
+body:not(.memo) .card:not(.done) .ovoz{display:none}
+.farq{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.farq summary{cursor:pointer;color:var(--accent);font-size:13px;font-weight:600}
+.farq ul{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.6}
+.farq li.self{color:var(--ink);font-weight:600}
+.farq .ok{color:var(--ok);font-weight:600}
+body:not(.memo) .card:not(.done) .farq{display:none}
 </style><!--pwa--><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#101216"><link rel="apple-touch-icon" href="/icon-192.png"><!--/pwa--></head>
 <body><div class="bar"><div class="wrap"><a class="home" href="index.html">⌂ Bosh sahifa</a><h1>Shpargalka</h1>
 <input id="search" type="search" placeholder="Qidirish…">
@@ -154,6 +165,20 @@ score();
       cb.closest('section').style.opacity=cb.checked?'0.55':'';});
     if(cb.checked)cb.closest('section').style.opacity='0.55';
   });
+  // Ovozli sharh: bitta audio, bosilganda o'ynaydi; fayl bo'lmasa brauzer ovozi o'qiydi.
+  const audio=new Audio();let current=null;
+  function stopAll(){audio.pause();try{speechSynthesis.cancel()}catch(e){}
+    document.querySelectorAll('.play.on').forEach(b=>{b.classList.remove('on');b.textContent='▶ Ovozli sharh'});current=null;}
+  audio.addEventListener('ended',stopAll);
+  document.addEventListener('click',e=>{const b=e.target.closest('.play');if(!b)return;
+    const was=current===b;stopAll();if(was)return;
+    current=b;b.classList.add('on');b.textContent="⏸ To'xtatish";
+    if(b.dataset.src){audio.src=b.dataset.src;audio.play().catch(()=>{speak(b)})}
+    else{speak(b)}
+  });
+  function speak(b){try{const u=new SpeechSynthesisUtterance(b.parentElement.querySelector('.ovoz-text').textContent);
+      const v=speechSynthesis.getVoices();u.voice=v.find(x=>/uz/i.test(x.lang))||v.find(x=>/tr/i.test(x.lang))||v.find(x=>/ru/i.test(x.lang))||null;
+      u.rate=1.05;u.onend=stopAll;speechSynthesis.speak(u)}catch(err){b.textContent='yana bir bosing';setTimeout(stopAll,1500)}}
   const only=document.getElementById('onlywrong');
   if(only)only.addEventListener('change',()=>{
     document.querySelectorAll('.card[data-n]').forEach(c=>{
