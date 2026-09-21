@@ -98,7 +98,7 @@ body:not(.memo) .card:not(.done) .twins{display:none}
 .filter{flex:1 1 auto}
 .twin img{width:64px;height:44px}
 }
-</style></head>
+</style><!--pwa--><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#101216"><link rel="apple-touch-icon" href="/icon-192.png"><!--/pwa--></head>
 <body><div class="bar"><div class="wrap"><a class="home" href="../index.html">⌂ Bosh sahifa</a><h1>Saqlanganlarim</h1>
 <input id="search" type="search" placeholder="Qidirish: shatakka, chorraha, belgi…">
 <label class="filter"><input type="checkbox" id="onlygrp"> faqat chalg'ituvchilar</label>
@@ -134,4 +134,4 @@ const q=document.getElementById('search'),only=document.getElementById('onlygrp'
 function apply(){const v=(q?.value||'').toLowerCase().replace(/[‘’ʻʼ`´']/g,'').trim();document.querySelectorAll('.item').forEach(it=>it.classList.toggle('hidden',(!!v&&!it.dataset.search.includes(v))||(!!only?.checked&&it.dataset.grp==='0')))}
 q?.addEventListener('input',apply);only?.addEventListener('change',apply);
 })();
-</script></body></html>
+</script><!--pwa-js--><script src="/offline.js" defer></script><!--/pwa-js--></body></html>

@@ -78,7 +78,7 @@ th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertic
 table{font-size:13px}
 th,td{padding:5px 6px}
 }
-</style></head>
+</style><!--pwa--><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#101216"><link rel="apple-touch-icon" href="/icon-192.png"><!--/pwa--></head>
 <body><div class="bar"><div class="wrap"><a class="home" href="../index.html">⌂ Bosh sahifa</a><h1>23-guruh — Relssiz transport vositalarining harakatlanishi uchun tasmal</h1>
 <div class="seg" role="group" aria-label="Rejim"><button data-mode="solve" aria-pressed="true">Yechish</button><button data-mode="memo" aria-pressed="false">Yodlash</button></div>
 <button class="btn" id="reset">Qayta boshlash</button><button class="btn" id="theme" aria-label="Yorug'/qorong'i rejim">◐</button>
@@ -97,4 +97,4 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 const s=document.getElementById('search');if(s)s.addEventListener('input',()=>{const t=s.value.toLowerCase().replace(/[‘’ʻʼ`´']/g,'').trim();document.querySelectorAll('.group').forEach(g=>g.classList.toggle('hidden',!!t&&!g.dataset.search.includes(t)));document.querySelectorAll('.toc li').forEach(li=>li.classList.toggle('hidden',!!t&&document.getElementById(li.dataset.g).classList.contains('hidden')))});
 try{const th=localStorage.getItem('osonprava-theme');if(th)document.documentElement.dataset.theme=th;setMode(localStorage.getItem('osonprava-mode')||'solve');document.querySelectorAll('.card').forEach(c=>{const k=localStorage.getItem(KEY+c.dataset.n);if(k!==null)pick(c,k,false)})}catch(e){setMode('solve')}
 score();
-</script></body></html>
+</script><!--pwa-js--><script src="/offline.js" defer></script><!--/pwa-js--></body></html>
