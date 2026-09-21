@@ -57,6 +57,9 @@ for f, bucket in (("osonprava-xatolarim.json", old_ns), ("osonprava-xatolarim-20
         if b:
             bucket.add(b["n"])
 err_ns = old_ns | new_ns
+# Egasi so'ragan qo'shimcha savollar: xato qilmagan, lekin oila to'liq ko'rinsin
+# (#1067, #1088 — #1065/#1066 bilan bitta zebra oilasi).
+EXTRA_NS = {1067, 1088}
 stubborn = old_ns & new_ns
 text = {b["n"]: norm(b["q"] + " " + " ".join(b["answers"])) for b in base}
 correct = {b["n"]: b["answers"][b["correct"]] for b in base}
@@ -88,7 +91,7 @@ BUCKETS = [
     (4, "Qolgan savollar", "boshqa bo'limlarga tushmagan xatolaringiz", "qolgan", lambda b: True),
 ]
 
-pool = [bn[n] for n in sorted(err_ns)]
+pool = [bn[n] for n in sorted(err_ns | EXTRA_NS)]
 assigned, blocks = set(), []
 for day, title, sub, slug, match in BUCKETS:
     items = [b for b in pool if b["n"] not in assigned and match(b)]
@@ -204,6 +207,8 @@ def card(b):
         badges.append('<span class="badge bad">o\'jar — 2 marta xato</span>')
     elif n in new_ns:
         badges.append('<span class="badge">yangi xato</span>')
+    elif n in EXTRA_NS:
+        badges.append('<span class="badge">qo\'shimcha — oila to\'liq bo\'lsin</span>')
     if g:
         badges.append(f'<a class="badge grp" href="savollar/guruh-{g["g"]:03d}.html">chalg\'ituvchi · {g["g"]}-guruh</a>')
     img = f'<img class="qimg" loading="lazy" src="rasmlar/{html.escape(local_img(b["img"]))}" alt="rasm">' if b.get("img") else ""
@@ -263,7 +268,7 @@ for day in (1, 2, 3, 4):
 
 reja_body = (
     f'<p class="stats"><a href="index.html">← Bosh sahifa</a> · <a href="shpargalka.html">Shpargalka (qoidalar va jadvallar)</a><br>'
-    f'Faqat sizning xatolaringiz: {len(pool)} ta savol. Qizil ramka — ikkala ro\'yxatda ham turgan '
+    f'Sizning xatolaringiz va {len(EXTRA_NS)} ta qo\'shimcha savol — jami {len(pool)} ta. Qizil ramka — ikkala ro\'yxatda ham turgan '
     f'<b>{len(stubborn)} ta o\'jar</b> savol, ularga ko\'proq vaqt bering. '
     f'Har blokdagi «Javoblar jadvali» — o\'sha blokning shpargalkasi.</p>'
     + "".join(sections)
