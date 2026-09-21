@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shpargalka</title><style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#16181d;--muted:#5f6673;--line:#e3e6eb;--accent:#2f7df6;--ok:#1f9d55;--okbg:#e5f6ec;--bad:#d64545;--badbg:#fbe9e9;--mark:#fff1a8;--markink:#16181d}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#101216;--panel:#181b21;--ink:#e8eaee;--muted:#9aa2ae;--line:#2a2f37;--accent:#5b9bff;--ok:#43c47a;--okbg:#15301f;--bad:#f06b6b;--badbg:#3a1a1a;--mark:#5a4b10;--markink:#fff3bf}}
+:root[data-theme=dark]{--bg:#101216;--panel:#181b21;--ink:#e8eaee;--muted:#9aa2ae;--line:#2a2f37;--accent:#5b9bff;--ok:#43c47a;--okbg:#15301f;--bad:#f06b6b;--badbg:#3a1a1a;--mark:#5a4b10;--markink:#fff3bf}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding-block:10px}
+.bar h1{font-size:17px;margin:0;margin-right:auto}
+.bar input{flex:1 1 220px;min-width:0;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font:inherit}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button,.btn{font:inherit;padding:7px 12px;border:0;background:var(--panel);color:var(--ink);cursor:pointer}
+.btn{border:1px solid var(--line);border-radius:8px}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+.stats{color:var(--muted);margin:16px 0 8px}
+.stats a{color:var(--accent)}
+.toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.toc ol{margin:8px 0 0;padding-left:22px;columns:2 360px;column-gap:28px}
+.toc li{break-inside:avoid;margin:2px 0}
+.toc a{color:var(--ink);text-decoration:none}.toc a:hover{color:var(--accent)}
+.toc small{color:var(--muted)}
+.part{font-size:20px;margin:32px 0 0;padding-top:8px;border-top:2px solid var(--line)}
+.group{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0;scroll-margin-top:70px}
+.ghead h2{font-size:18px;margin:4px 0 2px}
+.gid{font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;text-transform:uppercase;letter-spacing:.04em}
+.gsub{margin:0;color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px;margin-top:14px}
+.card{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px}
+.num{font-weight:700;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.dupe{color:var(--muted)}
+.qimg{width:100%;max-height:230px;object-fit:contain;border-radius:8px;background:var(--bg);cursor:zoom-in}
+.qimg.zoom{position:fixed;inset:0;width:100vw;height:100vh;max-height:none;z-index:50;background:rgba(0,0,0,.88);border-radius:0;cursor:zoom-out;padding:16px}
+.q{font-size:15px;margin:0;line-height:1.4}
+mark{background:var(--mark);color:var(--markink);border-radius:3px;padding:0 2px}
+.answers{display:flex;flex-direction:column;gap:6px}
+.ans{display:flex;gap:8px;align-items:flex-start;text-align:left;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer}
+.ans b{font-size:12px;color:var(--muted);min-width:22px;padding-top:1px}
+.ans:hover{border-color:var(--accent)}
+.card.done .ans{cursor:default}
+.card.done .ans[data-c="1"],body.memo .ans[data-c="1"]{background:var(--okbg);border-color:var(--ok)}
+.card.done .ans[data-c="1"] b,body.memo .ans[data-c="1"] b{color:var(--ok)}
+.card.done .ans.picked[data-c="0"]{background:var(--badbg);border-color:var(--bad)}
+.card.done .ans.picked[data-c="0"] b{color:var(--bad)}
+.key{margin-top:14px}.key summary{cursor:pointer;color:var(--accent);font-weight:600}
+body:not(.memo) .key{display:none}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin-top:8px;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.tn{white-space:nowrap;font-weight:700}.tc{color:var(--ok);font-weight:600}
+.score{color:var(--muted);font-size:13px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:18px}
+.pager a{color:var(--accent)}
+.hidden{display:none!important}
+.home{color:var(--accent);text-decoration:none;font-weight:600;white-space:nowrap}
+.totop{position:fixed;right:14px;bottom:14px;z-index:6;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;text-decoration:none;font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+@media (max-width:700px){
+.bar{position:static}
+.bar .wrap{gap:8px}
+.bar h1{font-size:15px;flex:1 1 0;min-width:0;margin-right:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar input{flex:1 1 100%;font-size:16px}
+.seg{flex:1 1 auto}.seg button{flex:1}
+.btn,.seg button{padding:9px 12px}
+.score{flex:1 1 100%}
+.stats{font-size:14px}
+.group{padding:12px;margin:12px 0;border-radius:10px}
+.ghead h2{font-size:16px}
+.grid{gap:10px;margin-top:10px}
+.card{padding:10px}
+.ans{padding:10px;min-height:44px}
+.qimg{max-height:260px}
+.toc{padding:10px}
+.toc ol{columns:1;padding-left:20px}
+.part{font-size:18px;margin-top:24px}
+table{font-size:13px}
+th,td{padding:5px 6px}
+}
+
+.badge{font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted);text-decoration:none}
+a.badge.grp{color:var(--bad);border-color:var(--bad);font-weight:600}
+.badge.bad{color:var(--bad);border-color:var(--bad);font-weight:600}
+.card.mine{border-color:var(--bad);border-width:2px}
+.day{margin:26px 0 8px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.day h2{margin:0 0 6px;font-size:19px}
+.day .bar-wrap{height:10px;background:var(--bg);border:1px solid var(--line);border-radius:999px;overflow:hidden;margin-top:8px}
+.day .bar-fill{height:100%;width:0;background:var(--ok);transition:width .3s}
+.day .plan{color:var(--muted);font-size:14px;margin:4px 0 0}
+.blockhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.blockhead label{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer}
+.blockprog{font-size:13px;color:var(--muted)}
+.sheet table{font-size:14px}
+.sheet .n{white-space:nowrap;color:var(--muted)}
+.sheet .a{color:var(--ok);font-weight:600}
+.sheet tr.mine .n{color:var(--bad);font-weight:700}
+.filterbar{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+</style><!--pwa--><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#101216"><link rel="apple-touch-icon" href="/icon-192.png"><!--/pwa--></head>
+<body><div class="bar"><div class="wrap"><a class="home" href="index.html">⌂ Bosh sahifa</a><h1>Shpargalka</h1>
+<input id="search" type="search" placeholder="Qidirish…">
+<div class="seg" role="group" aria-label="Rejim"><button data-mode="solve" aria-pressed="true">Yechish</button><button data-mode="memo" aria-pressed="false">Yodlash</button></div>
+<button class="btn" id="reset">Qayta boshlash</button><button class="btn" id="theme" aria-label="Yorug'/qorong'i rejim">◐</button>
+<span class="score" id="score"></span></div></div>
+<div class="wrap"><p class="stats"><a href="index.html">← Bosh sahifa</a> · <a href="reja.html">4 kunlik reja</a><br>Bu yerdagi har bir qator — bazadagi savolning <b>to'g'ri javobi</b>, o'ylab topilgan qoida emas. Raqamlar o'sish tartibida — shunday yodlash oson.</p><section class="group sheet"><header class="ghead"><h2>Tezlik (km/s) — 16 ta</h2><p class="gsub">eng katta ruxsat etilgan tezliklar — o&#x27;sish tartibida · qizil raqam = siz xato qilgan savol</p></header><div class="tablewrap"><table><thead><tr><th>Savol</th><th>Matn</th><th>To'g'ri javob</th></tr></thead><tbody><tr class=""><td class="n">#893</td><td>Turar joy dahalarida eng katta tezlikda harakatlanishga ruxsat etiladi:</td><td class="a">20 km/s</td></tr><tr class=""><td class="n">#920</td><td>Turar joy dahalarida qanday eng katta tezlikda harakatlanishga ruxsat etiladi:</td><td class="a">20 km/s</td></tr><tr class="mine"><td class="n">#1008</td><td>Maktab va maktabgacha ta&#x27;lim tashkilotlari atrofidagi yo&#x27;llarda 300 metrgacha bo&#x27;lgan masofada qanday eng yuqori tezlikda harakatlanishga ruxsat etiladi</td><td class="a">30 km/s</td></tr><tr class=""><td class="n">#306</td><td>Mazkur sharoitda shatakka olishni amalga oshirilishning yo&#x27;l qo&#x27;yilgan eng yuqori tezligi qanday?</td><td class="a">50 km/s</td></tr><tr class=""><td class="n">#686</td><td>Egiluvchan ulagichda shatakka olinganda qanday yuqori tezlik bilan harakatlanishga ruxsat etilgan?</td><td class="a">50 km/s</td></tr><tr class="mine"><td class="n">#431</td><td>Aholi punktlaridan tashqarida yuk avtomobil yukxonasida odamlarni tashishda qanday eng yuqori tezlikda harakatlanishga ruxsat etiladi?</td><td class="a">60 km/s</td></tr><tr class=""><td class="n">#358</td><td>Avtomobilning taniqli belgisi bo&#x27;lganda, yo&#x27;lning mazkur qismida qanday yuqori tezlik bilan harakatlanishiga ruxsat etiladi?</td><td class="a">70 km/s</td></tr><tr class=""><td class="n">#859</td><td>Aholi punktlaridan tashqarida tirkamali yuk avtomobillari qanday yuqori tezlik bilan harakatlanishi mumkin?</td><td class="a">70 km/s</td></tr><tr class="mine"><td class="n">#57</td><td>Tirkamali yengil avtomobillarga yo&#x27;lning shunday yo&#x27;l belgisi o&#x27;rnatilgan qismida qanday eng katta tezlik bilan harakatlanishga ruxsat etiladi?</td><td class="a">80 km/s</td></tr><tr class="mine"><td class="n">#267</td><td>Aholi yashaydigan joylardan tashqarida tirkamali yengil avtomobil haydovchisiga eng katta tezlikni soatiga necha kilometrdan oshirmasdan harakatlanishga ruxsat etiladi?</td><td class="a">80 km/s</td></tr><tr class="mine"><td class="n">#367</td><td>Bunday yo&#x27;l belgisi o&#x27;rnatilgan yo&#x27;l qismlarida motosikllarga qanday yuqori tezlik bilan harakatlanishga ruxsat etiladi?</td><td class="a">80 km/s</td></tr><tr class="mine"><td class="n">#377</td><td>Shunday yo&#x27;l belgisi bilan belgilangan yo&#x27;l qismlarida shaharlararo bo&#x27;lmagan avtobuslarning qanday yuqori tezlik bilan harakatlanishiga ruxsat etiladi?</td><td class="a">80 km/s</td></tr><tr class="mine"><td class="n">#507</td><td>Bunday yo&#x27;l belgisi bilan belgilangan yo&#x27;l qismlarida ruxsat etilgan to&#x27;la vazni 3,5 t dan ortiq bo&#x27;lgan yuk avtomobillarining qanday yuqori tezlik bilan harakatlanishiga ruxsat etiladi?</td><td class="a">80 km/s</td></tr><tr class="mine"><td class="n">#568</td><td>Bunday yo&#x27;l belgisi bilan belgilangan yo&#x27;l qismlarida shaharlararo qatnaydigan avtobuslarning qanday eng yuqori tezlikda harakatlanishiga ruxsat etiladi?</td><td class="a">90 km/s</td></tr><tr class=""><td class="n">#47</td><td>Aholi punktlaridan tashqarida yengil avtomobillarning qanday eng katta tezlik bilan harakatlanishiga ruxsat etiladi?</td><td class="a">100 km/s</td></tr><tr class="mine"><td class="n">#87</td><td>Shunday yo&#x27;l belgisi bo&#x27;lgan yo&#x27;l qismlarida ruxsat etilgan to&#x27;la vazni 3,5t. dan oshmaydigan yuk avtomobillariga qanday eng katta tezlik bilan harakat qilishga ruxsat etiladi?</td><td class="a">100 km/s</td></tr></tbody></table></div></section><section class="group sheet"><header class="ghead"><h2>Masofa (metr) — 39 ta</h2><p class="gsub">ulagich, to&#x27;xtash, gabarit masofalari · qizil raqam = siz xato qilgan savol</p></header><div class="tablewrap"><table><thead><tr><th>Savol</th><th>Matn</th><th>To'g'ri javob</th></tr></thead><tbody><tr class=""><td class="n">#1002</td><td>Odam tashish uchun mo&#x27;ljallangan yuk avtomobili yukxonasiga o&#x27;rnatilgan o&#x27;rindiqlar, yukxona pastki qismidan qancha balandlikda mahkamlangan bo&#x27;lishi kerak?</td><td class="a">0.3 - 0.5 metr</td></tr><tr class=""><td class="n">#1024</td><td>Odam tashish uchun mo&#x27;ljallangan yuk avtomobili yukxonasiga o&#x27;rnatilgan o&#x27;rindiqlar, yukxona pastki qismidan qancha balandlikda mahkamlangan bo&#x27;lishi kerak?</td><td class="a">0,3-0,5 metr</td></tr><tr class="mine"><td class="n">#1013</td><td>Yengil avtomobilning tom qismiga o&#x27;rnatilgan yukxonasida yuk tashishdan, yukning uzunligi avtomobilning gabaritidan necha metrdan oshmasa tashishga yo&#x27;l qo&#x27;yiladi?</td><td class="a">0.5 metr</td></tr><tr class=""><td class="n">#1030</td><td>Velosipedlarda yuk tashilganda gabaritidan bo&#x27;yiga va eniga qanchadan ortiq chiqib tursa, yuk tashish taqiqlanadi?</td><td class="a">0.5 m</td></tr><tr class=""><td class="n">#1253</td><td>Yengil avtomobilning tom qismiga o&#x27;rnatilgan ushbu yuk transport vositasining gabaritlaridan oldi va orqasiga necha metrgacha chiqib turishiga ruxsat etiladi?</td><td class="a">0.5 m</td></tr><tr class=""><td class="n">#370</td><td>Qanday holatlarda tashilayotgan yuk ishora taxtachalari yoki bayroqchalar bilan, kunning qorong&#x27;i vaqtida, yetarli ko&#x27;rinmaydigan sharoitlarda esa yorug&#x27;lik qaytargich yoki chiroqlar bilan belgilanadi?</td><td class="a">Yuk transport vositasining o&#x27;lchamidan oldinda yoki orqada 1 m dan ko&#x27;p chiqib qolganda</td></tr><tr class="mine"><td class="n">#999</td><td>Yengil avtomobilning tom qismiga o&#x27;rnatilgan yukxonasida yukning balandligi (maxsus moslamalar bilan mustahkamlangan holda velosipedlarni tashish bundan mustasno) necha metrdan oshmasligi kerak ?</td><td class="a">1.0 metr</td></tr><tr class="mine"><td class="n">#340</td><td>Tashilayotgan yuk DYHX xizmatining ruxsatisiz transport vositasi o&#x27;lchamlarining orqa nuqtasidan eng katta miqdorda qanday chiqib turishi mumkin?</td><td class="a">2,0 m</td></tr><tr class="mine"><td class="n">#88</td><td>To&#x27;xtagan transport vositasi bilan yotiq sidirg&#x27;a chiziq orasidagi masofa qancha bo&#x27;lganida to&#x27;xtash taqiqlanadi?</td><td class="a">2,5 m</td></tr><tr class="mine"><td class="n">#470</td><td>Davlat YHX xizmati ruxsatisiz transport vositasining yuk bilan yoki yuksiz harakatlanishiga qanday yuqori maksimal kenglikda yo&#x27;l qo&#x27;yiladi?</td><td class="a">2,55 m</td></tr><tr class="mine"><td class="n">#578</td><td>Uzunasiga ketgan sidirg&#x27;a chizig&#x27;i bilan to&#x27;xtagan transport vositalari o&#x27;rtasidagi masofa quyidagidan kam bo&#x27;lgan joylarda transport vositalarining to&#x27;xtashi va to&#x27;xtab turishi taqiqlanadi:</td><td class="a">3,0 m</td></tr><tr class=""><td class="n">#1250</td><td>Qattiq ulagichda shatakka olishda transport vositalari orasidagi masofa qancha bo’lganda
+harakatlanishi mumkin?</td><td class="a">3 metr</td></tr><tr class=""><td class="n">#69</td><td>Qattiq ulagich transport vositalari orasida qanchadan ortiq bo&#x27;lmagan masofani ta&#x27;minlashi kerak?</td><td class="a">4 m</td></tr><tr class="mine"><td class="n">#350</td><td>Davlat YHX xizmatining ruxsatisiz transport vositasining yuk bilan yoki yuksiz qanday yuqori o&#x27;lchamdagi balandlik bilan harakatlanishiga yo&#x27;l qo&#x27;yiladi?</td><td class="a">4,0 m</td></tr><tr class=""><td class="n">#549</td><td>Egiluvchan ulagichda shatakka olganda transport vositalari orasidagi masofa qanday bo&#x27;lishi kerak?</td><td class="a">4-6 m</td></tr><tr class="mine"><td class="n">#584</td><td>Kesishma orqali harakatlanish hollarida haydovchi to&#x27;xtash chizig&#x27;i 2.5 &quot;To&#x27;xtamasdan harakatlanish taqiqlangan&quot; yo&#x27;l belgisi yoki svetofor bo&#x27;lmaganda, o&#x27;tib ketayotgan poezdni o&#x27;tkazib yuborishga qoida bo&#x27;yicha shlagbaumgacha kamida qancha masofa qolganida to&#x27;xtash kerak?</td><td class="a">5 m</td></tr><tr class=""><td class="n">#1014</td><td>Piyodalar o&#x27;tish joyiga qancha masofa yetmasdan to&#x27;xtash va to&#x27;xtab turishga ruxsat beriladi?</td><td class="a">10 metr</td></tr><tr class="mine"><td class="n">#1084</td><td>Velosiped yo&#x27;lkasi bilan kesishuvga qanchadan kam masofa qolganda to&#x27;xtash taqiqlanadi?</td><td class="a">10 metr</td></tr><tr class=""><td class="n">#1087</td><td>Ushbu vaziyatda haydovchilar birinchi temir yo&#x27;l iziga eng kamida necha metr qolganda to&#x27;xtashlari kerak?</td><td class="a">10 metr</td></tr><tr class=""><td class="n">#1054</td><td>01.01.1981- yilgacha ishlab chiqarilgan yengil avtomobillar uchun Qoidalar tormozlashning 40km/s tezlikda harakatlanish tartibida ishchi tormoz tizimining qanday samaradorlik me&#x27;yoriga ruxsat berilgan?</td><td class="a">14,5 m</td></tr><tr class=""><td class="n">#238</td><td>Belgilangan yo&#x27;nalishdagi transport vositalari yoki taksilarning to&#x27;xtab turish maydonchalaridan ular bo&#x27;lmagan hollarda, (yo&#x27;nalishli transport voistalari harakatiga xalaqit bermasa) belgi ko&#x27;rsatkichlaridan qanday masofada to&#x27;xtash va to&#x27;xtab turish taqiqlanadi?</td><td class="a">15 m</td></tr><tr class=""><td class="n">#627</td><td>Aholi punktlarida &quot;Falokat&quot; to&#x27;xtash belgisi yoki miltillovchi qizil chiroq mexanik transport vositasidan kamida qanday masofada qo&#x27;yilishi kerak?</td><td class="a">15 m</td></tr><tr class="mine"><td class="n">#1015</td><td>Bekat maydonchalaridan harakatlanish yo&#x27;nalishi bo&#x27;ylab qanchadan kam masofada (yetmasdan va o&#x27;tib ketib) to&#x27;xtash va to&#x27;xtab turish taqiqlanadi?</td><td class="a">15 metr</td></tr><tr class=""><td class="n">#90</td><td>Bir tirkamali avtopoezdning qanday eng katta uzunligida DYHXX ruxsatisiz harakatlanishga yo&#x27;l qo&#x27;yiladi?</td><td class="a">20 m</td></tr><tr class=""><td class="n">#109</td><td>Qoidalarga ko&#x27;ra shatakka olish vaqtida bir-biriga ulangan mexanik transport vositalari tarkibining qanday umumiy uzunligiga yo&#x27;l qo&#x27;yiladi?</td><td class="a">20 m</td></tr><tr class=""><td class="n">#739</td><td>72 km/soat tezlikda harakatlanayotgan transport vositasi 1 sekundda qancha masofani bosib o&#x27;tadi?</td><td class="a">20 m</td></tr><tr class=""><td class="n">#774</td><td>90 km/soat tezlikda harakatlanayotgan transport vositasi 1 sekundda qancha masofani bosib o&#x27;tadi?</td><td class="a">25 m</td></tr><tr class=""><td class="n">#672</td><td>Bu belgilar nimani bildiradi?</td><td class="a">&quot;Nogiron&quot; taniqli belgisi bo&#x27;lgan motokajava va avtomobillar uchun 30 m li hududdagi to&#x27;xtab turish joyini</td></tr><tr class=""><td class="n">#731</td><td>108 km/s tezlikda harakatlanayotgan transport vositasi 1 sekundda qancha masofani bosib o&#x27;tadi?</td><td class="a">30 m</td></tr><tr class=""><td class="n">#944</td><td>108 km/s tezlikda harakatlanayotgan transport vositasi 1 sekundda qancha masofani bosib o&#x27;tadi?</td><td class="a">30 m</td></tr><tr class="mine"><td class="n">#1005</td><td>Kesishayotgan qatnov qismi chetiga qanchadan kam masofa qolganda to&#x27;xtash taqiqlanadi?</td><td class="a">30 metr</td></tr><tr class="mine"><td class="n">#1006</td><td>Transport vositalarining qayrilib olish joylarida va unga yetmasdan yoki o&#x27;tib qanchadan kam masofada to&#x27;xtashi taqiqlanadi?</td><td class="a">30 metr</td></tr><tr class=""><td class="n">#53</td><td>Bu belgilar aholi yashaydigan joylarda xavfli yo&#x27;l qismi boshlanishidan qancha masofada o&#x27;rnatiladi?</td><td class="a">50-100 m</td></tr><tr class="mine"><td class="n">#498</td><td>Transport vositalarining temir yo&#x27;l kesishmasiga qancha masofadan yaqinroqda to&#x27;xtab turishlari taqiqlanadi?</td><td class="a">50 m</td></tr><tr class=""><td class="n">#1079</td><td>Ushbu belgi aholi punktlarida xavfli yo&#x27;l qismi boshlanishidan qancha masofa oldin o&#x27;rnatiladi?</td><td class="a">50-100 m</td></tr><tr class="mine"><td class="n">#439</td><td>Tyagach haydovchisi nima qilishi kerak?</td><td class="a">Xavfli burilishdan 100 metr o&#x27;tib turib to&#x27;xtash va orqasida to&#x27;plangan transport vositalarini o&#x27;tkazib yuborishi</td></tr><tr class="mine"><td class="n">#629</td><td>Quvib o&#x27;tish qaysi hollardan taqiqlanadi?</td><td class="a">Temir yo&#x27;l kesishmalarida va ulargacha 100 m dan kam masofa qolganda</td></tr><tr class=""><td class="n">#266</td><td>Haydovchi, boshqa haydovchilarning ko&#x27;zini qamashtirishi mumkin bo&#x27;lgan uzoqni yorituvchi chiroqni yaqinni yorituvchiga qachon almashtirishi kerak?</td><td class="a">Ro&#x27;paradagi transport vositasiga 150 m qolganda, shuningdek ko&#x27;proq masofada ham, agar ro&#x27;paradagi transport vositasining haydovchisi faralar chirog&#x27;ini o&#x27;chirib yoqib shuni zarur deb ko&#x27;rsatsa</td></tr><tr class=""><td class="n">#581</td><td>&quot;Yetarli ko&#x27;rinmaslik&quot; deganda nima tushuniladi?</td><td class="a">Tuman tushganda, yomg&#x27;ir, qor yog&#x27;ayotganda va hokazo sharoitlarda, shuningdek kunning g&#x27;ira-shira vaqtida yo&#x27;lning ko&#x27;rinishi 300 m. dan kam bo&#x27;lishi</td></tr></tbody></table></div></section><section class="group sheet"><header class="ghead"><h2>Protektor va qiyalik (mm, %) — 8 ta</h2><p class="gsub">shina naqshi va tormoz tizimi · qizil raqam = siz xato qilgan savol</p></header><div class="tablewrap"><table><thead><tr><th>Savol</th><th>Matn</th><th>To'g'ri javob</th></tr></thead><tbody><tr class=""><td class="n">#190</td><td>Motosikllarning shinalari naqshining qoldiq chuqurligi qanchadan kam bo&#x27;lmasligi kerak?</td><td class="a">0,8 mm</td></tr><tr class="mine"><td class="n">#309</td><td>N2; N3; O3; O4 toifadagi transport vositalari shina protektori naqshlarining qoldiq balandligi qanchadan kam bo&#x27;lmasligi kerak?</td><td class="a">1 mm</td></tr><tr class=""><td class="n">#170</td><td>M1 toifadagi transport vositalari shinalari protektori naqshining qoldiq balandligi necha mm. dan kam bo&#x27;lmasligi kerak?</td><td class="a">1,6 mm</td></tr><tr class=""><td class="n">#60</td><td>M2, M3 toifali avtotransport vositalari shina protektorlari naqshlarining qoldiq balandligi kamida qancha bo&#x27;lishi kerak?</td><td class="a">2 mm.</td></tr><tr class=""><td class="n">#180</td><td>Transport vositalaridan qanday sharoitlarda foydalanishga ruxsat etiladi?</td><td class="a">N2; N3 toifadagi transport vositalari shinalari protektori naqshining qoldiq balandligi 1,6 mm ni tashkil qiladi</td></tr><tr class="mine"><td class="n">#600</td><td>M2; M3 toifadagi avtotransport vositalarining shina protektori naqshlarining balandligi quyidagilardan kam bo&#x27;lmasligi kerak:</td><td class="a">2,0 mm</td></tr><tr class="mine"><td class="n">#150</td><td>To&#x27;xtab turish tormoz tizimi qanchadan kam bo&#x27;lgan qiyalikda M toifadagi avtotransport vositalarini harakatsiz holatda ushlab tura olmasa, bu avtotransport vositalaridan foydalanish taqiqlanadi?</td><td class="a">25 %</td></tr><tr class="mine"><td class="n">#811</td><td>To&#x27;xtab turish tormoz tizimi N toifadagi avtotransport vositalarini aslahalangan holatda qanday qiyalikda ushlab tura olmasa foydalanish taqiqlanadi?</td><td class="a">31 % dan kam</td></tr></tbody></table></div></section><section class="group sheet"><header class="ghead"><h2>Vaqt — 1 ta</h2><p class="gsub">muddatlar · qizil raqam = siz xato qilgan savol</p></header><div class="tablewrap"><table><thead><tr><th>Savol</th><th>Matn</th><th>To'g'ri javob</th></tr></thead><tbody><tr class=""><td class="n">#310</td><td>Mexanik transport vositalari va uning tirkamalarining egalari texnik holatidan qat&#x27;iy nazar; xarid qilgan (olgan) paytdan boshlab shu muddat mobaynida DYHX xizmatida ro&#x27;yxatdan o&#x27;tkazishlari kerak:</td><td class="a">10 kun</td></tr></tbody></table></div></section><section class="group sheet"><header class="ghead"><h2>Ta&#x27;riflar — 8 ta</h2><p class="gsub">atamalar — juftlab solishtiring · qizil raqam = siz xato qilgan savol</p></header><div class="tablewrap"><table><thead><tr><th>Savol</th><th>Matn</th><th>To'g'ri javob</th></tr></thead><tbody><tr class="mine"><td class="n">#217</td><td>To&#x27;xtash yo&#x27;li deb nimaga aytiladi?</td><td class="a">Avtomobilda xavfning haydovchiga ma&#x27;lum bo&#x27;lgan paytidan boshlab to&#x27;la to&#x27;xtagunga qadar bosib o&#x27;tilgan masofan</td></tr><tr class="mine"><td class="n">#256</td><td>Oraliq masofa deb nimaga aytiladi?</td><td class="a">&quot;А&quot; masofa</td></tr><tr class="mine"><td class="n">#861</td><td>Tormoz yo&#x27;li deb nimaga aytiladi?</td><td class="a">Haydovchi tormoz tepkisini bosgandan to avtomobil to&#x27;liq to&#x27;xtaguncha bosib o&#x27;tilgan masofa</td></tr><tr class="mine"><td class="n">#1009</td><td>O&#x27;zib ketish deb nimaga aytiladi?</td><td class="a">Transport vositasining bir yo&#x27;nalishda transport vositasi tezligidan ortiq tezlikda harakatlanishi</td></tr><tr class="mine"><td class="n">#1010</td><td>To&#x27;siq deb nimaga aytiladi?</td><td class="a">Yo&#x27;lning qatnov qismida harakatsiz holda bo&#x27;lgan jism</td></tr><tr class="mine"><td class="n">#1011</td><td>Qayta tizilish deb nimaga aytiladi?</td><td class="a">Dastlabki harakat yo&#x27;nalishini saqlagan holda o&#x27;z harakatlanish tasmasidan boshqa harakatlanish qatoriga o&#x27;tish</td></tr><tr class=""><td class="n">#1132</td><td>To‘xtab turish deb nimaga aytiladi?</td><td class="a">Transport vositasiga yo‘lovchilarni chiqarish yoki tushirish, yuk ortish yoki tushirish bilan bog‘liq bo‘lmagan hollarda harakatini 10 daqiqadan ko‘proq vaqtga atayin to‘xtatish</td></tr><tr class="mine"><td class="n">#1133</td><td>To‘xtash deb nimaga aytiladi?</td><td class="a">Transport vositasi harakatini 10 daqiqagacha bo‘lgan muddatga to‘xtatish (harakatsiz holatga keltirish)</td></tr></tbody></table></div></section><section class="group"><header class="ghead"><h2>Chorraha algoritmi</h2><p class="gsub">har chorraha savolida shu 4 qadamni tartib bilan yuriting</p></header><ol>
+<li><b>Tramvay bormi?</b> Teng sharoitda relssiz transportdan ustun (o'zi ham belgi/svetoforga bo'ysunadi).</li>
+<li><b>Belgi bormi?</b> Asosiy yo'l — o'tadi; ikkinchi darajali — yo'l beradi.</li>
+<li><b>O'ngdan xalaqit.</b> Belgi bo'lmasa yoki teng bo'lsa — o'ngdagi o'tadi.</li>
+<li><b>Manyovr.</b> Chapga buriluvchi yoki qayriluvchi — oxirida.</li>
+</ol>
+<p class="miss">Bu qator — qoidaning qisqa umumlashmasi, jadvallardagi raqamlar esa to'g'ridan-to'g'ri savollar javobidan olingan.</p></section></div><a class="totop" href="#top" aria-label="Tepaga">↑</a>
+<script>
+const KEY='osonprava-javob-';
+function setMode(m){document.body.classList.toggle('memo',m==='memo');document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m));try{localStorage.setItem('osonprava-mode',m)}catch(e){}}
+function score(){const c=document.querySelectorAll('.card.done');let ok=0;c.forEach(x=>{if(x.querySelector('.ans.picked[data-c="1"]'))ok++});const el=document.getElementById('score');if(el)el.textContent=c.length?`Yechildi: ${c.length} · to'g'ri: ${ok} · xato: ${c.length-ok}`:''}
+function pick(card,k,save){if(card.classList.contains('done'))return;const b=card.querySelector(`.ans[data-k="${k}"]`);if(!b)return;b.classList.add('picked');card.classList.add('done');if(save){try{localStorage.setItem(KEY+card.dataset.n,k)}catch(e){}}score()}
+document.addEventListener('click',e=>{const a=e.target.closest('.ans');if(a&&!document.body.classList.contains('memo')){pick(a.closest('.card'),a.dataset.k,true);return}
+const img=e.target.closest('.qimg');if(img){img.classList.toggle('zoom');return}
+const m=e.target.closest('[data-mode]');if(m){setMode(m.dataset.mode);return}
+if(e.target.closest('#reset')){document.querySelectorAll('.card').forEach(c=>{c.classList.remove('done');c.querySelectorAll('.picked').forEach(p=>p.classList.remove('picked'));try{localStorage.removeItem(KEY+c.dataset.n)}catch(e){}});score();return}
+if(e.target.closest('#theme')){const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';try{localStorage.setItem('osonprava-theme',r.dataset.theme)}catch(e){}}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.qimg.zoom').forEach(i=>i.classList.remove('zoom'))});
+const s=document.getElementById('search');if(s)s.addEventListener('input',()=>{const t=s.value.toLowerCase().replace(/[‘’ʻʼ`´']/g,'').trim();document.querySelectorAll('.group').forEach(g=>g.classList.toggle('hidden',!!t&&!g.dataset.search.includes(t)));document.querySelectorAll('.toc li').forEach(li=>li.classList.toggle('hidden',!!t&&document.getElementById(li.dataset.g).classList.contains('hidden')))});
+try{const th=localStorage.getItem('osonprava-theme');if(th)document.documentElement.dataset.theme=th;setMode(localStorage.getItem('osonprava-mode')||'solve');document.querySelectorAll('.card').forEach(c=>{const k=localStorage.getItem(KEY+c.dataset.n);if(k!==null)pick(c,k,false)})}catch(e){setMode('solve')}
+score();
+</script><script>
+(() => {
+  const KEY='osonprava-javob-';
+  const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+  function stats(root){let done=0,ok=0,total=0;
+    root.querySelectorAll('.card[data-n]').forEach(c=>{total++;const v=get(KEY+c.dataset.n);
+      if(v!==null){done++;if(c.querySelector('.ans[data-c="1"]')?.dataset.k===v)ok++}});
+    return {done,ok,total};}
+  function refresh(){
+    document.querySelectorAll('.day').forEach(d=>{
+      const secs=document.querySelectorAll('[data-day="'+d.dataset.day+'"]');
+      let done=0,ok=0,total=0;
+      secs.forEach(s=>{const st=stats(s);done+=st.done;ok+=st.ok;total+=st.total});
+      const pct=total?Math.round(done*100/total):0;
+      d.querySelector('.bar-fill').style.width=pct+'%';
+      d.querySelector('.dstat').textContent=done?`${done}/${total} yechildi · to'g'ri ${ok} · xato ${done-ok} · ${pct}%`:`${total} ta savol`;
+    });
+    document.querySelectorAll('section.group[data-day]').forEach(s=>{
+      const st=stats(s);const el=s.querySelector('.blockprog');
+      if(el)el.textContent=st.done?`${st.done}/${st.total} · xato ${st.done-st.ok}`:`${st.total} ta savol`;
+    });
+  }
+  document.addEventListener('click',e=>{if(e.target.closest('.ans')||e.target.closest('#reset'))setTimeout(refresh,50)});
+  document.querySelectorAll('.blockdone').forEach(cb=>{
+    const k='reja-blok-'+cb.dataset.blok;
+    try{cb.checked=get(k)==='1'}catch(e){}
+    cb.addEventListener('change',()=>{try{localStorage.setItem(k,cb.checked?'1':'0')}catch(e){}
+      cb.closest('section').style.opacity=cb.checked?'0.55':'';});
+    if(cb.checked)cb.closest('section').style.opacity='0.55';
+  });
+  const only=document.getElementById('onlywrong');
+  if(only)only.addEventListener('change',()=>{
+    document.querySelectorAll('.card[data-n]').forEach(c=>{
+      const v=get(KEY+c.dataset.n);
+      const wrong=v!==null&&c.querySelector('.ans[data-c="1"]')?.dataset.k!==v;
+      c.classList.toggle('hidden',only.checked&&!wrong);
+    });
+  });
+  refresh();
+})();
+</script><!--pwa-js--><script src="/offline.js" defer></script><!--/pwa-js--></body></html>
